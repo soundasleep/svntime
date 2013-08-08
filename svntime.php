@@ -4,34 +4,95 @@
 // work to extend it to support multiple authors
 // (just add a second level to each array, e.g. $analysed[author][] = array(...)
 
-$svn_url = "https://openclerk.googlecode.com/svn/trunk";
-
-$analysed = array();
+// default parameters
+$svn_urls = array();
 $between_revisions = 60 * 60;	// how much of a gap to consider between revisions, seconds
 $before_revision = 30 * 60;		// how much extra time to give before a revision
-$after_revision = 30 * 60;		// how much extra time to give after a revision
+$after_revision = 15 * 60;		// how much extra time to give after a revision
 
-$log = shell_exec("svn log -r 1:HEAD " . $svn_url);
-$split = explode("\n", $log);
-foreach ($split as $line) {
-
-	$matches = false;
-	if (preg_match("#^r([0-9]+) \\| ([^ ]+) \\| ([^\\|]+) \\(([^\\|]+)\\) \\| #i", $line, $matches)) {
-		$analysed[] = array(
-			'revision' => $matches[1],
-			'author' => $matches[2],
-			'date' => strtotime($matches[3]),
-			'line' => $matches[0],
-		);
+// get arguments from command line
+for ($i = 1; $i < $argc; $i++) {
+	if ($argv[$i] == "--help" || $argv[$i] == "/?") {
+		// print help and exit
+		print_help();
+		exit(0);
 	}
 
+	if (substr($argv[$i], 0, 2) == "--") {
+		$switch = substr($argv[$i], 2);
+		if (($i + 1) < $argc) {
+			$value = $argv[$i + 1];
+			switch ($switch) {
+				case "between":
+					$between_revisions = $value;
+					break;
+
+				case "before":
+					$before_revision = $value;
+					break;
+
+				case "after":
+					$after_revision = $value;
+					break;
+			}
+			$i++;	// skip next argument
+		} else {
+			error_log("No switch argument for '$switch' defined");
+			exit(1);
+		}
+	} else {
+		// must be a SVN url
+		$svn_urls[] = $argv[$i];
+	}
+}
+
+if (!$svn_urls) {
+	error_log("No SVN URLs defined.");
+	print_help();
+	exit(1);
+}
+
+function print_help() {
+	echo "SVNTime: A script to calculate repository activity.\n";
+	echo "Arguments: php -f svntime.php [--before N] [--after N] [--between N] url1 [url2 ...]\n";
+}
+
+$analysed = array();
+
+foreach ($svn_urls as $url) {
+	echo "Downloading SVN log for $url...\n";
+	$log = shell_exec("svn log -r 1:HEAD " . $url);
+	$split = explode("\n", $log);
+	foreach ($split as $line) {
+
+		$matches = false;
+		if (preg_match("#^r([0-9]+) \\| ([^ ]+) \\| ([^\\|]+) \\(([^\\|]+)\\) \\| #i", $line, $matches)) {
+			$analysed[] = array(
+				'revision' => $matches[1],
+				'author' => $matches[2],
+				'date' => strtotime($matches[3]),
+				'line' => $matches[0],
+				'url' => $url,
+			);
+		}
+
+	}
+}
+
+// sort by date (earliest dates first)
+usort($analysed, 'sort_by_date');
+function sort_by_date($a, $b) {
+	if ($a['date'] == $b['date']) {
+		return 0;
+	}
+	return $a['date'] < $b['date'] ? -1 : 1;
 }
 
 // print analysis as CSV
 $fp = fopen("revisions.csv", "w");
-fwrite($fp, csv_array(array("Revision", "Author", "Date")));
+fwrite($fp, csv_array(array("Revision", "Author", "Date", "Repository")));
 foreach ($analysed as $line) {
-	fwrite($fp, csv_array(array($line['revision'], $line['author'], iso_date($line['date']))));
+	fwrite($fp, csv_array(array($line['revision'], $line['author'], iso_date($line['date']), $line['url'])));
 }
 echo "Wrote revisions.csv with " . number_format(count($analysed)) . " revisions...\n";
 fclose($fp);
