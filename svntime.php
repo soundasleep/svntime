@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * svntime: A simple script to calculate the amount of time spent by committers on a Subversion repository.
+ */
+
 // note: this script only handles a single author currently, but it shouldn't be too much
 // work to extend it to support multiple authors
 // (just add a second level to each array, e.g. $analysed[author][] = array(...)
