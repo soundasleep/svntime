@@ -1,0 +1,14 @@
+{
+  "name": "soundasleep/svntime",
+  "type": "library",
+  "version": "0.1.0",
+  "keywords": ["svn", "subversion", "tracking", "effort"],
+  "homepage": "https://github.com/soundasleep/svntime",
+  "license": "GPLv3",
+  "require": {
+    "php": ">=5.2.3"
+  },
+  "autoload": {
+    "classmap": ["./"]
+  }
+}
