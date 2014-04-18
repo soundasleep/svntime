@@ -8,7 +8,7 @@ Or GitHub (Git): https://github.com/soundasleep/svntime
 
 ## Composer support
 
-`svntime` can now be installed with [Composer](https://getcomposer.org/):
+`svntime` can now be installed with [Composer](https://getcomposer.org/) through [Packagist](https://packagist.org/packages/soundasleep/svntime):
 
 ```json
 {
