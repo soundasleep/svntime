@@ -1,5 +1,6 @@
 {
   "name": "soundasleep/svntime",
+  "description": "A simple script to calculate the amount of time spent by committers on a Subversion repository",
   "type": "library",
   "version": "0.1.0",
   "keywords": ["svn", "subversion", "tracking", "effort"],
