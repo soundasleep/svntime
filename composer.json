@@ -5,7 +5,7 @@
   "version": "0.1.0",
   "keywords": ["svn", "subversion", "tracking", "effort"],
   "homepage": "https://github.com/soundasleep/svntime",
-  "license": "GPLv3",
+  "license": "GPL-3.0",
   "require": {
     "php": ">=5.2.3"
   },
