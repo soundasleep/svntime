@@ -6,6 +6,8 @@ A simple script to calculate the amount of time spent by committers on a Subvers
 Available on Google Code (SVN): https://code.google.com/p/svntime/
 Or GitHub (Git): https://github.com/soundasleep/svntime
 
+**UPDATE:** This script has been superceded by [gittime](https://github.com/soundasleep/gittime) which has tests and support for more data sources.
+
 ## Composer support
 
 `svntime` can now be installed with [Composer](https://getcomposer.org/) through [Packagist](https://packagist.org/packages/soundasleep/svntime):
